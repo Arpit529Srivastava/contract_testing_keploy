@@ -1,15 +1,19 @@
 package database
-import(
+
+import (
 	"database/sql"
+	"fmt"
 	"log"
+
 	_ "github.com/lib/pq"
 )
 
 func InitDB() *sql.DB {
-	connStr := "user=postgres password=yourpassword dbname=userservice sslmode=disable"
+	connStr := "user=postgres password=Rupam#rani1983 dbname=userservices host=localhost port=5433 sslmode=disable"
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)
 	} 
+	fmt.Println("connection established")
 	return db
 }
