@@ -1,42 +1,29 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
-
-	"strconv"
-
 	"github.com/Arpit529stivastava/payment-services/services"
-	"github.com/gin-gonic/gin"
 )
 
-func ProcessPayment(c *gin.Context) {
-	var req struct {
-		OrderID int     `json:"order_id"`
-		Amount  float64 `json:"amount"`
-	}
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	paymentID, err := services.ProcessPayment(req.OrderID, req.Amount)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Payment failed"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"payment_id": paymentID, "status": "completed"})
+type PaymentRequest struct {
+	OrderID       string  `json:"order_id"`  // Changed to string
+	Amount        float64 `json:"amount"`
+	PaymentMethod string  `json:"method"`
 }
 
-func GetPaymentStatus(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
-
-	status, err := services.GetPaymentStatus(id)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Payment not found"})
+func MakePayment(w http.ResponseWriter, r *http.Request) {
+	var req PaymentRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Not a Valid Request 😔", http.StatusBadRequest)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"payment_status": status})
+	// Process the Payment
+	if err := services.ProcessPayment(req.OrderID, req.Amount, req.PaymentMethod); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Payment successful😎😎"})
 }

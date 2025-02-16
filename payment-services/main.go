@@ -5,18 +5,16 @@ import (
 	"net/http"
 
 	"github.com/Arpit529stivastava/payment-services/routes"
-	"github.com/gin-gonic/gin"
+	"github.com/gorilla/mux"
 )
 
 func main() {
-	r := gin.Default()
+	r := mux.NewRouter()
 
-	// Set up routes
-	routes.PaymentRoutes(r)
+	// Register routes
+	routes.RegisterPayment(r)
 
-	// Start server on port 8003
-	log.Println("Payment Service running on port 8003")
-	if err := r.Run(":8003"); err != nil {
-		log.Fatal("Failed to start server:", http.StatusInternalServerError)
-	}
+	// Start the server
+	log.Println("Payment Service is running on port 8082...")
+	log.Fatal(http.ListenAndServe(":8082", r))
 }

@@ -11,7 +11,9 @@ import (
 
 	"github.com/Arpit529stivastava/order-services/database"
 	"github.com/Arpit529stivastava/order-services/models"
+	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // Check if user ID exists in database by calling User Service
@@ -26,7 +28,7 @@ func CheckUserID(userID int) bool {
 
 	var result map[string]bool
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		log.Println("Error decoding response from User Service:😓", err)
+		log.Println("Error decoding response from User Service:", err)
 		return false
 	}
 
@@ -92,3 +94,34 @@ func GetOrders(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(orders)
 }
+
+// Get Order By ID Handler
+func GetOrderByID(w http.ResponseWriter, r *http.Request) {
+	// Extract the order ID from the URL
+	vars := mux.Vars(r)
+	orderID := vars["id"] // Extract ID from the URL path
+
+	if orderID == "" {
+		http.Error(w, "Order ID is required", http.StatusBadRequest)
+		return
+	}
+
+	// Fetch the order from MongoDB by ID (MongoDB's _id is used for querying)
+	collection := database.GetCollection("orders")
+	var order models.Order
+	err := collection.FindOne(context.TODO(), bson.M{"_id": orderID}).Decode(&order)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			http.Error(w, "Order not found", http.StatusNotFound)
+		} else {
+			http.Error(w, "Error fetching order", http.StatusInternalServerError)
+			log.Println("MongoDB Query Error:", err)
+		}
+		return
+	}
+
+	// Return the order details
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(order)
+}
+
