@@ -1,20 +1,56 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
-
-	"github.com/Arpit529stivastava/payment-services/routes"
-	"github.com/gorilla/mux"
 )
 
 func main() {
-	r := mux.NewRouter()
+	// Create a router
+	router := http.NewServeMux()
 
-	// Register routes
-	routes.RegisterPayment(r)
+	// Payment handler
+	router.HandleFunc("/pay", func(w http.ResponseWriter, r *http.Request) {
+		var paymentRequest struct {
+			ID      string `json:"id"`
+			Payment string `json:"payment"`
+		}
 
-	// Start the server
-	log.Println("Payment Service is running on port 8082...")
-	log.Fatal(http.ListenAndServe(":8082", r))
+		// Decode the incoming JSON request
+		if err := json.NewDecoder(r.Body).Decode(&paymentRequest); err != nil {
+			http.Error(w, "Invalid Payload", http.StatusBadRequest)
+			return
+		}
+
+		// Forward the request to the order-service
+		requestBody, err := json.Marshal(paymentRequest)
+		if err != nil {
+			http.Error(w, "Error encoding payment request", http.StatusInternalServerError)
+			return
+		}
+
+		// Send the request to the order-service
+		resp, err := http.Post("http://localhost:8081/update-payment", "application/json", bytes.NewBuffer(requestBody))
+		if err != nil {
+			http.Error(w, "Error contacting order-service", http.StatusInternalServerError)
+			return
+		}
+		defer resp.Body.Close()
+
+		// Check the response from the order-service
+		if resp.StatusCode == http.StatusOK {
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Payment status updated successfully 😎"})
+		} else {
+			w.WriteHeader(resp.StatusCode)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Failed to update payment status 😢"})
+		}
+	})
+
+	// Start the payment-service
+	fmt.Println("Payment Service running on port 8082 😎...")
+	log.Fatal(http.ListenAndServe(":8082", router))
 }

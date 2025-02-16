@@ -18,7 +18,7 @@ import (
 
 // Check if user ID exists in database by calling User Service
 func CheckUserID(userID int) bool {
-	url := fmt.Sprintf("http://localhost:8080/users/%d", userID) 
+	url := fmt.Sprintf("http://localhost:8080/users/%d", userID)
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Println("Error contacting User Service:", err)
@@ -58,10 +58,12 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Insert order into MongoDB
+	// Set default payment status and creation time
+	order.PaymentStatus = "pending" // Default payment status
 	order.CreatedAt = time.Now()
-	collection := database.GetCollection("orders") // Ensure consistent collection name
 
+	// Insert order into MongoDB
+	collection := database.GetCollection("orders")
 	_, err = collection.InsertOne(context.TODO(), order)
 	if err != nil {
 		http.Error(w, "Error inserting data into MongoDB", http.StatusInternalServerError)
@@ -75,7 +77,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 // Get All Orders Handler
 func GetOrders(w http.ResponseWriter, r *http.Request) {
-	collection := database.GetCollection("orders") 
+	collection := database.GetCollection("orders")
 	cursor, err := collection.Find(context.TODO(), bson.M{})
 	if err != nil {
 		http.Error(w, "Error fetching orders", http.StatusInternalServerError)
@@ -97,16 +99,14 @@ func GetOrders(w http.ResponseWriter, r *http.Request) {
 
 // Get Order By ID Handler
 func GetOrderByID(w http.ResponseWriter, r *http.Request) {
-	// Extract the order ID from the URL
 	vars := mux.Vars(r)
-	orderID := vars["id"] // Extract ID from the URL path
+	orderID := vars["id"]
 
 	if orderID == "" {
 		http.Error(w, "Order ID is required", http.StatusBadRequest)
 		return
 	}
 
-	// Fetch the order from MongoDB by ID (MongoDB's _id is used for querying)
 	collection := database.GetCollection("orders")
 	var order models.Order
 	err := collection.FindOne(context.TODO(), bson.M{"_id": orderID}).Decode(&order)
@@ -120,8 +120,40 @@ func GetOrderByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Return the order details
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(order)
 }
 
+// Update Payment Status Handler
+func UpdatePaymentStatus(w http.ResponseWriter, r *http.Request) {
+	var paymentRequest struct {
+		ID      string `json:"id"`
+		Payment string `json:"payment"`
+	}
+
+	// Decode the incoming JSON request
+	if err := json.NewDecoder(r.Body).Decode(&paymentRequest); err != nil {
+		http.Error(w, "Invalid Payload", http.StatusBadRequest)
+		return
+	}
+
+	// Update payment status in MongoDB
+	collection := database.GetCollection("orders")
+	filter := bson.M{"_id": paymentRequest.ID}
+	update := bson.M{"$set": bson.M{"payment_status": "completed"}} // Update status to "completed"
+
+	result, err := collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		http.Error(w, "Error updating payment status", http.StatusInternalServerError)
+		log.Println("MongoDB Update Error:", err)
+		return
+	}
+
+	if result.ModifiedCount == 0 {
+		http.Error(w, "Order not found or payment status already updated", http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Payment status updated successfully 😎"})
+}
