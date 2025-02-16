@@ -14,9 +14,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// Check if user ID exists in PostgreSQL by calling User Service
+// Check if user ID exists in database by calling User Service
 func CheckUserID(userID int) bool {
-	url := fmt.Sprintf("http://localhost:8080/users/%d", userID) // Correct API endpoint
+	url := fmt.Sprintf("http://localhost:8080/users/%d", userID) 
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Println("Error contacting User Service:", err)
@@ -26,7 +26,7 @@ func CheckUserID(userID int) bool {
 
 	var result map[string]bool
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		log.Println("Error decoding response from User Service:", err)
+		log.Println("Error decoding response from User Service:😓", err)
 		return false
 	}
 
@@ -52,7 +52,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 	// Validate User ID in PostgreSQL
 	if !CheckUserID(userID) {
-		http.Error(w, "User doesn't exist in the PostgreSQL DB. Please create an account first.", http.StatusUnauthorized)
+		http.Error(w, "User doesn't exist in the Database 🙁. Please create an account first. 👍", http.StatusUnauthorized)
 		return
 	}
 
@@ -68,12 +68,12 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Order placed successfully"})
+	json.NewEncoder(w).Encode(map[string]string{"message": "Order placed successfully 😎"})
 }
 
 // Get All Orders Handler
 func GetOrders(w http.ResponseWriter, r *http.Request) {
-	collection := database.GetCollection("orders") // Ensure consistent collection name
+	collection := database.GetCollection("orders") 
 	cursor, err := collection.Find(context.TODO(), bson.M{})
 	if err != nil {
 		http.Error(w, "Error fetching orders", http.StatusInternalServerError)
