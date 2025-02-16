@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -9,19 +10,16 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func main() {
+	// Connect to MongoDB
+	database.ConnectMongoDB()
 
-func main(){
-	db := database.InitDB()
-	defer db.Close()
+	// Create Router
+	router := mux.NewRouter()
 
+	// Register Routes
+	routes.RegisterRoutes(router)
 
-	/// setup rotuer
-
-	r := mux.NewRouter()
-	routes.RegisterOrderRoutes(r,db)
-
-	// SERVER STARTED
-
-	log.Println(("Order service started"))
-	log.Fatal(http.ListenAndServe(":8081", r))
+	fmt.Println("Order Service running on port 8081 😎...")
+	log.Fatal(http.ListenAndServe(":8081", router))
 }

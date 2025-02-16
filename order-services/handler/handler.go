@@ -1,52 +1,94 @@
 package handler
 
 import (
-	"database/sql"
+	"context"
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
+	"strconv"
+	"time"
 
+	"github.com/Arpit529stivastava/order-services/database"
 	"github.com/Arpit529stivastava/order-services/models"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-// CREATE ALL THE ORDERS
-
-func CreatOrder(db *sql.DB) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var order models.Order
-		json.NewDecoder(r.Body).Decode(&order)
-
-		result, err := db.Exec("orders (user_id, amount, status) VALUES (?, ?, ?)",
-			order.UserID, order.Amount, "Pending")
-		if err != nil {
-			http.Error(w, "Failed to create order", http.StatusInternalServerError)
-			return
-		}
-
-		orderID, _ := result.LastInsertId()
-		order.ID = int(orderID)
-		json.NewEncoder(w).Encode(order)
+// Check if user ID exists in PostgreSQL by calling User Service
+func CheckUserID(userID int) bool {
+	url := fmt.Sprintf("http://localhost:8080/users/%d", userID) // Correct API endpoint
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Println("Error contacting User Service:", err)
+		return false
 	}
+	defer resp.Body.Close()
+
+	var result map[string]bool
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		log.Println("Error decoding response from User Service:", err)
+		return false
+	}
+
+	return result["exists"]
 }
 
+// Create Order Handler
+func CreateOrder(w http.ResponseWriter, r *http.Request) {
+	var order models.Order
 
-// GET ALL THE ORDERS
-
-func GetAllOrders(db *sql.DB) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		rows, err := db.Query("SELECT id, user_id, amount, status FROM orders")
-		if err != nil {
-			http.Error(w, "Error fetching orders", http.StatusInternalServerError)
-			return
-		}
-		defer rows.Close()
-
-		var orders []models.Order
-		for rows.Next() {
-			var order models.Order
-			rows.Scan(&order.ID, &order.UserID, &order.Amount, &order.Status)
-			orders = append(orders, order)
-		}
-
-		json.NewEncoder(w).Encode(orders)
+	// Decode the incoming JSON request
+	if err := json.NewDecoder(r.Body).Decode(&order); err != nil {
+		http.Error(w, "Invalid Payload", http.StatusBadRequest)
+		return
 	}
+
+	// Convert UserID to an integer
+	userID, err := strconv.Atoi(order.UserID)
+	if err != nil {
+		http.Error(w, "Invalid User ID format", http.StatusBadRequest)
+		return
+	}
+
+	// Validate User ID in PostgreSQL
+	if !CheckUserID(userID) {
+		http.Error(w, "User doesn't exist in the PostgreSQL DB. Please create an account first.", http.StatusUnauthorized)
+		return
+	}
+
+	// Insert order into MongoDB
+	order.CreatedAt = time.Now()
+	collection := database.GetCollection("orders") // Ensure consistent collection name
+
+	_, err = collection.InsertOne(context.TODO(), order)
+	if err != nil {
+		http.Error(w, "Error inserting data into MongoDB", http.StatusInternalServerError)
+		log.Println("MongoDB Insert Error:", err)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Order placed successfully"})
+}
+
+// Get All Orders Handler
+func GetOrders(w http.ResponseWriter, r *http.Request) {
+	collection := database.GetCollection("orders") // Ensure consistent collection name
+	cursor, err := collection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		http.Error(w, "Error fetching orders", http.StatusInternalServerError)
+		log.Println("MongoDB Query Error:", err)
+		return
+	}
+	defer cursor.Close(context.TODO())
+
+	var orders []models.Order
+	if err := cursor.All(context.TODO(), &orders); err != nil {
+		http.Error(w, "Error reading orders", http.StatusInternalServerError)
+		log.Println("MongoDB Cursor Error:", err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(orders)
 }
