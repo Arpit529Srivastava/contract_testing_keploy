@@ -74,7 +74,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Order placed successfully 😎"})
-	fmt.Println("Order placed succesfully")
+	fmt.Println("Order placed succesfully 🛒")
 }
 
 // Get All Orders Handler

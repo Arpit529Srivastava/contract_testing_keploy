@@ -44,6 +44,7 @@ func main() {
 		if resp.StatusCode == http.StatusOK {
 			w.WriteHeader(http.StatusOK)
 			json.NewEncoder(w).Encode(map[string]string{"message": "Payment status updated successfully 😎"})
+			fmt.Println("Payment SuccessFull 💰")
 		} else {
 			w.WriteHeader(resp.StatusCode)
 			json.NewEncoder(w).Encode(map[string]string{"error": "Failed to update payment status 😢"})
