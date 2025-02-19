@@ -13,6 +13,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// Order represents the order structure from order-service
 type Order struct {
 	ID            string    `json:"id"`
 	UserEmail     string    `json:"user_email"`
@@ -23,67 +24,83 @@ type Order struct {
 	PaymentStatus string    `json:"payment_status"`
 	EmailStatus   string    `json:"email_status"`
 }
-
 func init() {
-	err := godotenv.Load(".env")
+	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 }
 
 func main() {
-	http.HandleFunc("/notify", func(w http.ResponseWriter, r *http.Request) {
-		checkPaymentStatus()
+	// Create a router
+	router := http.NewServeMux()
+
+	// Notification handler
+	router.HandleFunc("/notify", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("🔍 Checking payment status...")
+
+		if err := checkPaymentStatus(); err != nil {
+			http.Error(w, "Failed to check payment status", http.StatusInternalServerError)
+			return
+		}
+
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]string{"message": "success"})
+		json.NewEncoder(w).Encode(map[string]string{"message": "Notification process completed ✅"})
 	})
-	fmt.Println("Notification service is running on localhost:8084 🚀")
-	log.Fatal(http.ListenAndServe(":8084", nil))
+
+	// Start the notification service
+	fmt.Println("📩 Notification Service running on port 8084...")
+	log.Fatal(http.ListenAndServe(":8084", router))
 }
 
-func checkPaymentStatus() {
+// checkPaymentStatus fetches orders and updates email status if payment is completed
+func checkPaymentStatus() error {
 	resp, err := http.Get("http://localhost:8081/orders")
 	if err != nil {
-		log.Println("Error fetching orders 😭")
-		return
+		log.Println("Error fetching orders 😭:", err)
+		return err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		log.Println("Failed to fetch orders ❌")
-		return
+		return fmt.Errorf("failed to fetch orders")
 	}
 
 	var orders []Order
 	if err := json.NewDecoder(resp.Body).Decode(&orders); err != nil {
 		log.Println("Error decoding data 😵‍💫")
-		return
+		return err
 	}
 
 	for _, order := range orders {
 		if order.PaymentStatus == "completed" && order.EmailStatus != "sent" {
+			// Update email status in order-service
 			if err := updateEmailStatus(order.ID); err != nil {
 				log.Printf("❌ Failed to update email status for Order ID: %s: %s\n", order.ID, err)
 				continue
 			}
 
+			// Send email to user
 			log.Printf("✅ Payment successful for Order ID: %s, User: %s, Product: %s\n", order.ID, order.UserEmail, order.Product)
 			if err := sendEmail(order.UserEmail, order.ID, order.Product); err != nil {
 				log.Printf("❌ Failed to send email: %s\n", err)
 			}
 		}
 	}
+	return nil
 }
 
+// updateEmailStatus updates the email status in the order-service
 func updateEmailStatus(orderID string) error {
-	requestBody, err := json.Marshal(map[string]string{"id": orderID, "email_status": "sent"})
+	requestBody, err := json.Marshal(map[string]string{"id": orderID})
 	if err != nil {
-		return fmt.Errorf("error encoding email status request: %s", err)
+		return err
 	}
 
-	resp, err := http.Post("http://localhost:8081/orders/update-email", "application/json", bytes.NewBuffer(requestBody))
+	resp, err := http.Post("http://localhost:8081/update-email", "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
-		return fmt.Errorf("error contacting order-service: %s", err)
+		return err
 	}
 	defer resp.Body.Close()
 
@@ -91,29 +108,45 @@ func updateEmailStatus(orderID string) error {
 		return fmt.Errorf("failed to update email status, status code: %d", resp.StatusCode)
 	}
 
+	log.Printf("📨 Email status updated for Order ID: %s\n", orderID)
 	return nil
 }
 
-func sendEmail(to, orderID, product string) error {
-	smtpHost := os.Getenv("SMTP_HOST")
-	smtpPort := os.Getenv("SMTP_PORT")
-	smtpUsername := os.Getenv("SMTP_USERNAME")
-	smtpPassword := os.Getenv("SMTP_PASSWORD")
+// sendEmail simulates sending an email
+func sendEmail(userEmail, orderID, product string) error {
+	// Simulate email sending log
+	log.Printf("📩 Sending email to %s about Order ID: %s for Product: %s\n", userEmail, orderID, product)
 
-	if smtpUsername == "" || smtpPassword == "" {
-		return fmt.Errorf("SMTP credentials are missing! Set SMTP_USERNAME and SMTP_PASSWORD in .env file")
-	}
+	// Simulate delay (optional)
+	time.Sleep(2 * time.Second)
 
-	subject := "Your payment for your order was successful 😊"
-	body := fmt.Sprintf("Dear customer,\nThank you for trusting Keploy! Your order for Order ID: %s (Product: %s) has been successfully processed.\n\nThank you for shopping with us!\nVisit us again.", orderID, product)
+	// SMTP server configuration
+	smtpHost := os.Getenv("SMTP_HOST")        // Change if using another provider
+	smtpPort := os.Getenv("SMTP_PORT")        // TLS port
+	senderEmail := os.Getenv("SMTP_USERNAME") // Your email (use environment variable)
+	senderPass := os.Getenv("SMTP_PASSWORD")  // App password (use environment variable)
 
-	message := fmt.Sprintf("To: %s\r\nSubject: %s\r\n\r\n%s", to, subject, body)
-	auth := smtp.PlainAuth("", smtpUsername, smtpPassword, smtpHost)
+	// Email message
+	subject := "Your Order Confirmation"
+	body := fmt.Sprintf(
+		"Hello,\n\nYour order (ID: %s) for %s has been confirmed.\nThank you for shopping with us!\n\nBest regards,\nYour Store Team",
+		orderID, product,
+	)
+	msg := "From: " + senderEmail + "\n" +
+		"To: " + userEmail + "\n" +
+		"Subject: " + subject + "\n\n" +
+		body
 
-	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, smtpUsername, []string{to}, []byte(message))
+	// SMTP authentication
+	auth := smtp.PlainAuth("", senderEmail, senderPass, smtpHost)
+
+	// Send email
+	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, senderEmail, []string{userEmail}, []byte(msg))
 	if err != nil {
-		return fmt.Errorf("error sending the email: %s", err)
+		log.Printf("❌ Failed to send email to %s: %v\n", userEmail, err)
+		return err
 	}
 
+	log.Println("✅ Email sent successfully!")
 	return nil
 }

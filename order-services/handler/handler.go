@@ -13,7 +13,6 @@ import (
 	"github.com/Arpit529stivastava/order-services/models"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -126,6 +125,28 @@ func GetOrderByID(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(order)
 }
+func GetOrderByEmail(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	orderEmail := vars["user_email"]
+	if orderEmail == "" {
+		http.Error(w, "Order email is required", http.StatusBadRequest)
+		return
+	}
+	collection := database.GetCollection("orders")
+	var order models.Order
+	err := collection.FindOne(context.TODO(), bson.M{"user_email": orderEmail}).Decode(&order)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			http.Error(w, "Order not found", http.StatusNotFound)
+			log.Fatal("error finding the user_email")
+		} else {
+			http.Error(w, "Error fetching order", http.StatusInternalServerError)
+			log.Println("MongoDB Query Error:", err)
+		}
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(order)
+}
 
 // Update Payment Status Handler
 func UpdatePaymentStatus(w http.ResponseWriter, r *http.Request) {
@@ -161,60 +182,25 @@ func UpdatePaymentStatus(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Payment status updated successfully 😎"})
 }
-func GetOrderByEmail(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	orderEmail := vars["user_email"]
 
-	if orderEmail == "" {
-		http.Error(w, "Order email is required", http.StatusBadRequest)
-		return
-	}
-
-	collection := database.GetCollection("orders")
-	var order models.Order
-	err := collection.FindOne(context.TODO(), bson.M{"user_email": orderEmail}).Decode(&order)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			http.Error(w, "Order not found", http.StatusNotFound)
-			log.Fatal("error finding the user_email")
-		} else {
-			http.Error(w, "Error fetching order", http.StatusInternalServerError)
-			log.Println("MongoDB Query Error:", err)
-		}
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(order)
-}
 func UpdateEmailStatus(w http.ResponseWriter, r *http.Request) {
-	var paymentRequest struct {
-		ID string `json:"id"` // Only ID is needed for updating email status
+	var EmailRequest struct {
+		ID string `json:"id"` // ID is a string
 	}
 
-	// Decode the incoming JSON request
-	if err := json.NewDecoder(r.Body).Decode(&paymentRequest); err != nil {
-		http.Error(w, "Invalid Payload: "+err.Error(), http.StatusBadRequest)
+	// Decode the request body
+	if err := json.NewDecoder(r.Body).Decode(&EmailRequest); err != nil {
+		http.Error(w, "Invalid Payload", http.StatusBadRequest)
 		return
 	}
 
-	// Convert string ID to primitive.ObjectID
-	objectID, err := primitive.ObjectIDFromHex(paymentRequest.ID)
-	if err != nil {
-		http.Error(w, "Invalid Order ID", http.StatusBadRequest)
-		return
-	}
-
-	// Update email status in MongoDB
 	collection := database.GetCollection("orders")
-	filter := bson.M{"_id": objectID}
-	update := bson.M{"$set": bson.M{"email_status": "sent"}} // Update status to "sent"
 
-	// Use a context with timeout for the MongoDB operation
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	// 🔹 Match by string "_id" instead of ObjectID
+	filter := bson.M{"_id": EmailRequest.ID} 
+	update := bson.M{"$set": bson.M{"email_status": "sent"}}
 
-	result, err := collection.UpdateOne(ctx, filter, update)
+	result, err := collection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		http.Error(w, "Error updating email status: "+err.Error(), http.StatusInternalServerError)
 		log.Println("MongoDB Update Error:", err)
