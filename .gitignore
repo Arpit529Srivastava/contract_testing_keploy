@@ -1,2 +1,3 @@
 .vscode
-/user-service/.env
+.DS_Store
+

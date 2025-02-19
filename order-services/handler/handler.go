@@ -73,6 +73,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Order placed successfully 😎"})
+	fmt.Println("Order placed succesfully")
 }
 
 // Get All Orders Handler
@@ -156,4 +157,30 @@ func UpdatePaymentStatus(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Payment status updated successfully 😎"})
+}
+func GetOrderByEmail(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	orderEmail := vars["user_email"]
+
+	if orderEmail == "" {
+		http.Error(w, "Order email is required", http.StatusBadRequest)
+		return
+	}
+
+	collection := database.GetCollection("orders")
+	var order models.Order
+	err := collection.FindOne(context.TODO(), bson.M{"user_email": orderEmail}).Decode(&order)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			http.Error(w, "Order not found", http.StatusNotFound)
+			log.Fatal("error finding the user_email")
+		} else {
+			http.Error(w, "Error fetching order", http.StatusInternalServerError)
+			log.Println("MongoDB Query Error:", err)
+		}
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(order)
 }
