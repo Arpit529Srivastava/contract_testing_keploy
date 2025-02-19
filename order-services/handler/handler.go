@@ -13,6 +13,7 @@ import (
 	"github.com/Arpit529stivastava/order-services/models"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -60,6 +61,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 	// Set default payment status and creation time
 	order.PaymentStatus = "pending" // Default payment status
+	order.EmailStatus = "not sent"
 	order.CreatedAt = time.Now()
 
 	// Insert order into MongoDB
@@ -143,6 +145,7 @@ func UpdatePaymentStatus(w http.ResponseWriter, r *http.Request) {
 	filter := bson.M{"_id": paymentRequest.ID}
 	update := bson.M{"$set": bson.M{"payment_status": "completed"}} // Update status to "completed"
 
+
 	result, err := collection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		http.Error(w, "Error updating payment status", http.StatusInternalServerError)
@@ -183,4 +186,46 @@ func GetOrderByEmail(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(order)
+}
+func UpdateEmailStatus(w http.ResponseWriter, r *http.Request) {
+	var paymentRequest struct {
+		ID string `json:"id"` // Only ID is needed for updating email status
+	}
+
+	// Decode the incoming JSON request
+	if err := json.NewDecoder(r.Body).Decode(&paymentRequest); err != nil {
+		http.Error(w, "Invalid Payload: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Convert string ID to primitive.ObjectID
+	objectID, err := primitive.ObjectIDFromHex(paymentRequest.ID)
+	if err != nil {
+		http.Error(w, "Invalid Order ID", http.StatusBadRequest)
+		return
+	}
+
+	// Update email status in MongoDB
+	collection := database.GetCollection("orders")
+	filter := bson.M{"_id": objectID}
+	update := bson.M{"$set": bson.M{"email_status": "sent"}} // Update status to "sent"
+
+	// Use a context with timeout for the MongoDB operation
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		http.Error(w, "Error updating email status: "+err.Error(), http.StatusInternalServerError)
+		log.Println("MongoDB Update Error:", err)
+		return
+	}
+
+	if result.ModifiedCount == 0 {
+		http.Error(w, "Order not found or email status already updated", http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Email status updated successfully 😎"})
 }
