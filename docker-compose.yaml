@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  user-service:
+    build:
+      context: .
+      dockerfile: user-services/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: Rupam#rani1983
+      DB_NAME: User-service
+      DB_HOST: postgres  # FIXED: Use service name, not localhost
+      DB_PORT: 5432       # FIXED: Use default PostgreSQL port
+      DB_SSLMODE: disable
+
+  order-service:
+    build:
+      context: .
+      dockerfile: order-services/Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+    environment:
+      MONGO_URI: mongodb://mongodb:27017/  # FIXED: Correct MongoDB hostname
+      DB_NAME: orderDB
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: payment-services/Dockerfile
+    ports:
+      - "8082:8082"
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: notification-services/Dockerfile
+    ports:
+      - "8084:8084"
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: userdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  postgres-data:
+  mongo-data:
