@@ -13,6 +13,7 @@ import (
 func main() {
 	// Connect to MongoDB
 	database.ConnectMongoDB()
+	database.CreateOrdersCollection()
 
 	// Create Router
 	router := mux.NewRouter()
