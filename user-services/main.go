@@ -24,10 +24,15 @@ func main() {
 		log.Fatal("Failed to initialize database:", err)
 	}
 	defer db.Close()
-
+	// Create the users table
+	//database.CreateUsersTable() // Pass DB connection
+	err = database.CreateUsersTable(db)
+	if err != nil {
+		log.Fatal("Database setup error:", err)
+	}
 	// Setup the router
 	r := mux.NewRouter()
-	routes.RegisterUserRoutes(r, db)
+	routes.RegisterUserRoutes(r, db) // Pass DB connection
 
 	// Get the port from environment variables, default to 8080
 	port := os.Getenv("PORT")
