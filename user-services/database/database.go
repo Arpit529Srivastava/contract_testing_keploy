@@ -17,7 +17,7 @@ func InitDB() (*sql.DB,error) {
 	user := "arpitsrivastava"
 	password := "Rupam#rani1983"
 	dbname := "User-services"
-	host := "localhost"
+	host := "postgres"
 	port := "5432"
 	sslmode := "disable"
 
