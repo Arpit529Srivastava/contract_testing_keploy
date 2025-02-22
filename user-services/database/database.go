@@ -3,20 +3,19 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	_ "github.com/lib/pq"
+	"log"
 )
 
-  // Global DB instance
+// Global DB instance
 
-func InitDB() (*sql.DB,error) {
+func InitDB() (*sql.DB, error) {
 	// Load environment variables from .env file
 
-
 	// Fetching environment variables
-	user := "arpitsrivastava"
+	user := "postgres"
 	password := "Rupam#rani1983"
-	dbname := "User-services"
+	dbname := "user_services"
 	host := "postgres"
 	port := "5432"
 	sslmode := "disable"
@@ -34,14 +33,16 @@ func InitDB() (*sql.DB,error) {
 	fmt.Println("Connection established, let's go! 👌👌")
 	return db, nil
 }
+
 // CreateUsersTable explicitly creates the 'users' table if it doesn't exist
 func CreateUsersTable(db *sql.DB) error {
 	query := `
-	CREATE TABLE IF NOT EXISTS users (
-		id SERIAL PRIMARY KEY,
-		name VARCHAR(100) NOT NULL,
-		email VARCHAR(100) UNIQUE NOT NULL
-	);`
+	DROP TABLE IF EXISTS users;
+    CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL
+    );`
 
 	_, err := db.Exec(query)
 	if err != nil {
@@ -51,4 +52,3 @@ func CreateUsersTable(db *sql.DB) error {
 	log.Println("Users table checked/created successfully ✅")
 	return nil
 }
-

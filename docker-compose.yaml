@@ -12,9 +12,9 @@ services:
         condition: service_healthy
     restart: always    
     environment:
-      DB_USER: "arpitsrivastava"
+      DB_USER: "postgres"
       DB_PASSWORD: "Rupam#rani1983"
-      DB_NAME: "User-services"
+      DB_NAME: "user_services"
       DB_HOST: "postgres" 
       DB_PORT: "5432"
     volumes:
@@ -62,9 +62,9 @@ services:
     container_name: postgres
     restart: always
     environment:
-      POSTGRES_USER: "arpitsrivastava"
+      POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "Rupam#rani1983"
-      POSTGRES_DB: "User-services"
+      POSTGRES_DB: "user_services"
     ports:
       - "5432:5432"
     volumes:
@@ -73,10 +73,10 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U arpitsrivastava"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d user_services"]
       interval: 5s
       timeout: 3s
-      retries: 5
+      retries: 3
 
   mongodb:
     image: mongo:latest
@@ -92,7 +92,7 @@ services:
       test: echo 'db.runCommand("ping").ok' | mongosh mongodb:27017/test --quiet
       interval: 5s
       timeout: 3s
-      retries: 5
+      retries: 3
 
 volumes:
   user-data:

@@ -12,6 +12,7 @@ import (
 )
 
 // CreateUser - Inserts a new user into the database
+// CreateUser - Inserts a new user into the database
 func CreateUser(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var user models.User
@@ -21,6 +22,7 @@ func CreateUser(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
+		// Insert without providing ID (PostgreSQL will auto-generate)
 		err := db.QueryRow(`INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id`, user.Name, user.Email).Scan(&user.ID)
 		if err != nil {
 			http.Error(w, "Failed to insert user", http.StatusInternalServerError)
@@ -33,6 +35,7 @@ func CreateUser(db *sql.DB) http.HandlerFunc {
 		fmt.Println("User Created Successfully 🙌🏻")
 	}
 }
+
 
 // GetUserByID - Retrieves a user by ID
 // GetUserByID - Retrieves a user by ID and checks if the user exists

@@ -22,13 +22,9 @@ func CreateOrdersCollection() {
 		log.Fatalf("Error checking orders collection: %v", err)
 	}
 
-	// If collection is empty, insert a placeholder document to initialize it
+	// Log the status of the collection
 	if count == 0 {
-		_, err := collection.InsertOne(ctx, bson.M{"init": "placeholder"})
-		if err != nil {
-			log.Fatalf("Error initializing orders collection: %v", err)
-		}
-		fmt.Println("Orders collection initialized successfully")
+		fmt.Println("Orders collection is empty")
 	} else {
 		fmt.Println("Orders collection already exists")
 	}
