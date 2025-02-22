@@ -1,0 +1,45 @@
+version: api.keploy.io/v1beta1
+kind: Http
+name: test-set-1
+spec:
+  metadata: {}
+  req:
+    method: POST
+    proto_major: 1
+    proto_minor: 1
+    url: http://localhost:8080/users
+    header:
+      Accept: "*/*"
+      Content-length: "44"
+      Content-type: "application/json"
+      Host: localhost:8080
+      User-Agent: curl/7.88.1
+    body: { "name": "Keploy", "email": "arpitsrivastava529@gmail.com" }
+    timestamp: 2024-06-24T13:10:47.732915734+05:30
+    # this was the request section
+  resp:
+    status_code: 200
+    header:
+      Content-type: "application/json"
+      Content-length: "56"
+      Date: Mon, 24 Jun 2024 07:40:47 GMT
+      Server: server
+    body:
+      { "id": "1", "name": "Keploy", "email": "arpitsrivastava529@gmail.com" }
+    status-message: OK
+    proto_major: 0
+    proto_minor: 0
+    timestamp: 2024-06-24T13:10:49.810554677+05:30
+  object: []
+  assertion:
+    noise:
+      header.Date: []
+    created: 1719214649
+curl: |-
+  curl --request POST \
+    --url http://localhost:8080/users \
+    --header 'Host: localhost:8080' \
+    --header 'User-Agent: curl/7.88.1' \
+    --header 'Accept: */*' \
+    --header 'Content-Type: application/json' \
+    --data '{"name":"Keploy", "email":"arpitsrivatava529gmail.com"}'
