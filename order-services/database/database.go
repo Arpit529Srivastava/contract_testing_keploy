@@ -13,7 +13,7 @@ var DB *mongo.Collection
 
 func ConnectMongoDB() {
 	// Correct the MongoDB URI to use port 27017
-	ctx := options.Client().ApplyURI("mongodb://localhost:27017/")
+	ctx := options.Client().ApplyURI("mongodb://mongodb:27017/")
 	client, err := mongo.Connect(context.TODO(), ctx)
 	if err != nil {
 		log.Fatal("Failed to connect to MongoDB:", err)

@@ -7,6 +7,16 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always    
+    environment:
+      DB_USER: "arpitsrivastava"
+      DB_PASSWORD: "Rupam#rani1983"
+      DB_NAME: "User-services"
+      DB_HOST: "postgres" 
+      DB_PORT: "5432"
     volumes:
       - user-data:/app/data
     networks:
@@ -18,6 +28,12 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8081:8081"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    restart: always
+    environment:
+      MONGO_URI: "mongodb://mongodb:27017"
     volumes:
       - order-data:/app/data
     networks:
@@ -46,15 +62,21 @@ services:
     container_name: postgres
     restart: always
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: "arpitsrivastava"
+      POSTGRES_PASSWORD: "Rupam#rani1983"
+      POSTGRES_DB: "User-services"
     ports:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U arpitsrivastava"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   mongodb:
     image: mongo:latest
@@ -66,6 +88,11 @@ services:
       - mongo-data:/data/db
     networks:
       - app-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh mongodb:27017/test --quiet
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
 volumes:
   user-data:
