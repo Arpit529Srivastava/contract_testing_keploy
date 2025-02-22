@@ -22,7 +22,6 @@ type Order struct {
 	EmailStatus   string    `json:"email_status"`
 }
 
-
 func main() {
 	// Create a router
 	router := http.NewServeMux()
@@ -74,8 +73,8 @@ func checkPaymentStatus() error {
 			}
 
 			// Send email to user
-			log.Printf("✅ Payment successful for Order ID: %s, User: %s, Product: %s\n", order.ID, order.UserEmail, order.Product)
-			if err := sendEmail(order.UserEmail, order.ID, order.Product); err != nil {
+			log.Printf("✅ Payment successful for Order ID: %s, User: %s, Product: %s\n Price %f\n", order.ID, order.UserEmail, order.Product, order.Price)
+			if err := sendEmail(order.UserEmail, order.ID, order.Product, order.Price); err != nil {
 				log.Printf("❌ Failed to send email: %s\n", err)
 			}
 		}
@@ -105,7 +104,7 @@ func updateEmailStatus(orderID string) error {
 }
 
 // sendEmail simulates sending an email
-func sendEmail(userEmail, orderID, product string) error {
+func sendEmail(userEmail, orderID, product string, price float64) error {
 	// Simulate email sending log
 	log.Printf("📩 Sending email to %s about Order ID: %s for Product: %s\n", userEmail, orderID, product)
 
@@ -113,16 +112,16 @@ func sendEmail(userEmail, orderID, product string) error {
 	time.Sleep(2 * time.Second)
 
 	// SMTP server configuration
-	smtpHost := "smtp.gmail.com"    // Change if using another provider
-	smtpPort := "587"  // TLS port
+	smtpHost := "smtp.gmail.com"                  // Change if using another provider
+	smtpPort := "587"                             // TLS port
 	senderEmail := "arpitsrivastava529@gmail.com" // Your email (use environment variable)
-	senderPass := "bxxp vrkd fhku tqgz"  // App password (use environment variable)
+	senderPass := "bxxp vrkd fhku tqgz"           // App password (use environment variable)
 
 	// Email message
 	subject := "Your Order Confirmation"
 	body := fmt.Sprintf(
-		"Hello,\n\nYour order (ID: %s) for %s has been confirmed.\nThank you for shopping with us!\n\nBest regards,\nYour Store Team",
-		orderID, product,
+		"Hello,\n\nYour order (ID: %s) for %s has been confirmed. Total Price is %f\nThank you for shopping with us!\n\nBest regards,\nYour KhuPrit Team",
+		orderID, product, price,
 	)
 	msg := "From: " + senderEmail + "\n" +
 		"To: " + userEmail + "\n" +
