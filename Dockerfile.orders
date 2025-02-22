@@ -1,0 +1,14 @@
+# Stage 1: Build the Go application
+FROM golang:1.22 as builder
+WORKDIR /app/order-services
+COPY go.mod go.sum ./
+RUN go mod download
+COPY /order-services .
+RUN go build -o main .
+
+# Stage 2: Create a minimal runtime image
+FROM alpine:latest
+WORKDIR /root/
+COPY --from=builder /app/order-services ./main
+EXPOSE 8081
+CMD ["./main"]
