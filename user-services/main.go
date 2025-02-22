@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"user-services/database"
+	"user-services/routes"
 
-	"github.com/Arpit529stivastava/user-services/database"
-	"github.com/Arpit529stivastava/user-services/routes"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )

@@ -2,8 +2,8 @@ package routes
 
 import (
 	"database/sql"
+	"user-services/handler"
 
-	"github.com/Arpit529stivastava/user-services/handler"
 	"github.com/gorilla/mux"
 )
 func RegisterUserRoutes(r *mux.Router, db *sql.DB) {

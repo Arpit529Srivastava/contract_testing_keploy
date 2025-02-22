@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	models "user-services/usermodels"
 
-	models "github.com/Arpit529stivastava/user-services/usermodels"
 	"github.com/gorilla/mux"
 )
 
