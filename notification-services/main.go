@@ -7,10 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/smtp"
-	"os"
 	"time"
-
-	"github.com/joho/godotenv"
 )
 
 // Order represents the order structure from order-service
@@ -24,12 +21,7 @@ type Order struct {
 	PaymentStatus string    `json:"payment_status"`
 	EmailStatus   string    `json:"email_status"`
 }
-func init() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-}
+
 
 func main() {
 	// Create a router
@@ -121,10 +113,10 @@ func sendEmail(userEmail, orderID, product string) error {
 	time.Sleep(2 * time.Second)
 
 	// SMTP server configuration
-	smtpHost := os.Getenv("SMTP_HOST")        // Change if using another provider
-	smtpPort := os.Getenv("SMTP_PORT")        // TLS port
-	senderEmail := os.Getenv("SMTP_USERNAME") // Your email (use environment variable)
-	senderPass := os.Getenv("SMTP_PASSWORD")  // App password (use environment variable)
+	smtpHost := "smtp.gmail.com"    // Change if using another provider
+	smtpPort := "587"  // TLS port
+	senderEmail := "arpitsrivastava529@gmail.com" // Your email (use environment variable)
+	senderPass := "bxxp vrkd fhku tqgz"  // App password (use environment variable)
 
 	// Email message
 	subject := "Your Order Confirmation"

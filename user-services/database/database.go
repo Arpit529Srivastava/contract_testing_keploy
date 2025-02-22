@@ -4,9 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"os"
-
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -14,18 +11,15 @@ import (
 
 func InitDB() (*sql.DB,error) {
 	// Load environment variables from .env file
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Warning: No .env file found or couldn't be loaded")
-	}
+
 
 	// Fetching environment variables
-	user := os.Getenv("DB_USER")
-	password := os.Getenv("DB_PASSWORD")
-	dbname := os.Getenv("DB_NAME")
-	host := os.Getenv("DB_HOST")
-	port := os.Getenv("DB_PORT")
-	sslmode := os.Getenv("DB_SSLMODE")
+	user := "arpitsrivastava"
+	password := "Rupam#rani1983"
+	dbname := "User-services"
+	host := "localhost"
+	port := "5432"
+	sslmode := "disable"
 
 	// Construct connection string
 	connStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=%s",

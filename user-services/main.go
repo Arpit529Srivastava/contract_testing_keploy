@@ -8,15 +8,10 @@ import (
 	"user-services/routes"
 
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 )
 
 func main() {
 	// Load environment variables from .env file
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Warning: No .env file found or couldn't be loaded")
-	}
 
 	// Initialize the database
 	db, err := database.InitDB()
