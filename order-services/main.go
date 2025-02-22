@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"order-services/database"
+	"order-services/routes"
 
-	"github.com/Arpit529stivastava/order-services/database"
-	"github.com/Arpit529stivastava/order-services/routes"
 	"github.com/gorilla/mux"
 )
 

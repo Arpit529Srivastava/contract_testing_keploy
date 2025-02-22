@@ -1,7 +1,8 @@
 package routes
 
 import (
-	"github.com/Arpit529stivastava/order-services/handler"
+	"order-services/handler"
+
 	"github.com/gorilla/mux"
 )
 

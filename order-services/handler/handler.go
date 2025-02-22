@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"order-services/database"
+	"order-services/models"
 	"strconv"
 	"time"
 
-	"github.com/Arpit529stivastava/order-services/database"
-	"github.com/Arpit529stivastava/order-services/models"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
