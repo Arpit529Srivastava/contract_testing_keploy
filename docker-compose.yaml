@@ -10,6 +10,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    container_name: user_services    
     restart: always    
     environment:
       DB_USER: "postgres"
@@ -20,7 +21,7 @@ services:
     volumes:
       - user-data:/app/data
     networks:
-      - app-network
+      - keploy-network  # ✅ Fixed incorrect network format
 
   order-service:
     build:
@@ -31,31 +32,34 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
+    container_name: order_services
     restart: always
     environment:
       MONGO_URI: "mongodb://mongodb:27017"
     volumes:
       - order-data:/app/data
     networks:
-      - app-network
+      - keploy-network
 
   payment-service:
     build:
       context: ./payment-services
       dockerfile: Dockerfile
+    container_name: payment_services
     ports:
       - "8082:8082"
     networks:
-      - app-network
+      - keploy-network
 
   notification-service:
     build:
       context: ./notification-services
       dockerfile: Dockerfile
+    container_name: notification_services
     ports:
       - "8084:8084"
     networks:
-      - app-network
+      - keploy-network
 
   postgres:
     image: postgres:latest
@@ -71,7 +75,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql  
     networks:
-      - app-network
+      - keploy-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d user_services"]
       interval: 5s
@@ -87,9 +91,9 @@ services:
     volumes:
       - mongo-data:/data/db
     networks:
-      - app-network
+      - keploy-network
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh mongodb:27017/test --quiet
+      test: ["CMD", "mongosh", "--eval", "db.runCommand('ping').ok"]
       interval: 5s
       timeout: 3s
       retries: 3
@@ -101,5 +105,5 @@ volumes:
   mongo-data:
 
 networks:
-  app-network:
-    driver: bridge
+  keploy-network:
+    external: true
