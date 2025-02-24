@@ -16,7 +16,7 @@ func InitDB() (*sql.DB, error) {
 	user := "postgres"
 	password := "Rupam#rani1983"
 	dbname := "user_services"
-	host := "localhost"
+	host := "localhost" // this can be changes when running the docker-container
 	port := "5432"
 	sslmode := "disable"
 
