@@ -57,7 +57,7 @@ contract:
     generate: false
     driven: consumer
     mappings:
-        servicesMapping: {}
+        servicesMapping: {} 
         self: s1
 inCi: false
 
