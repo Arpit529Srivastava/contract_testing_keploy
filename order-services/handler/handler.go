@@ -18,7 +18,7 @@ import (
 
 // Check if user ID exists in database by calling User Service
 func CheckUserID(userID int) bool {
-	url := fmt.Sprintf("http://user-service:8080/users/%d", userID)
+	url := fmt.Sprintf("http://localhost:8080/users/%d", userID)
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Println("Error contacting User Service:", err)

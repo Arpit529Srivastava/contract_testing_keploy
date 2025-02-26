@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -12,9 +13,12 @@ import (
 var DB *mongo.Collection
 
 func ConnectMongoDB() {
-	// Correct the MongoDB URI to use port 27017
-	ctx := options.Client().ApplyURI("mongodb://mongodb:27017/")
-	client, err := mongo.Connect(context.TODO(), ctx)
+
+	// Create a new MongoDB client with a proper context and timeout
+	clientOptions := options.Client().ApplyURI("mongodb://orderUser:orderPassword@127.0.0.1:27017/orderDB?authSource=orderDB&authMechanism=SCRAM-SHA-1").
+		SetConnectTimeout(10 * time.Second)
+
+	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Fatal("Failed to connect to MongoDB:", err)
 	}
@@ -27,12 +31,11 @@ func ConnectMongoDB() {
 
 	fmt.Println("Connected to MongoDB 😊")
 
-	// Set DB to use the 'orderDB' database and the collection name
+	// Select the database and collection
 	DB = client.Database("orderDB").Collection("orders")
-
-	// Defer disconnect to close the connection properly when the function exits
 }
 
+// GetCollection returns the requested collection
 func GetCollection(collectionName string) *mongo.Collection {
 	return DB
 }

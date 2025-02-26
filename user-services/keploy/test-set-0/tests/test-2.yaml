@@ -16,39 +16,39 @@ spec:
             Content-Length: "78"
             Content-Type: application/json
             Host: localhost:8080
-            Postman-Token: 70d14864-72d4-4f93-b3fa-b3cf06a0af18
+            Postman-Token: 73c3e949-0c54-4247-a190-5da4e9e6c8a7
             User-Agent: PostmanRuntime/7.43.0
         body: |-
             {
                 "name" : "Arpit_Srivastava",
                 "email" : "srivastavaji529@gmail.com"
             }
-        timestamp: 2025-02-25T02:46:44.966913218+05:30
+        timestamp: 2025-02-25T23:21:32.760626312+05:30
     resp:
         status_code: 200
         header:
             Content-Length: "73"
             Content-Type: application/json
-            Date: Mon, 24 Feb 2025 21:16:44 GMT
+            Date: Tue, 25 Feb 2025 17:51:32 GMT
         body: |
             [{"id":1,"name":"Arpit_Srivastava","email":"srivastavaji529@gmail.com"}]
         status_message: OK
         proto_major: 0
         proto_minor: 0
-        timestamp: 2025-02-25T02:46:47.000326424+05:30
+        timestamp: 2025-02-25T23:21:34.775482344+05:30
     objects: []
     assertions:
         noise:
             header.Date: []
-    created: 1740431807
+    created: 1740505894
 curl: |-
     curl --request GET \
       --url http://localhost:8080/users \
+      --header 'Content-Type: application/json' \
+      --header 'User-Agent: PostmanRuntime/7.43.0' \
       --header 'Accept: */*' \
-      --header 'Postman-Token: 70d14864-72d4-4f93-b3fa-b3cf06a0af18' \
+      --header 'Postman-Token: 73c3e949-0c54-4247-a190-5da4e9e6c8a7' \
       --header 'Host: localhost:8080' \
       --header 'Accept-Encoding: gzip, deflate, br' \
       --header 'Connection: keep-alive' \
-      --header 'Content-Type: application/json' \
-      --header 'User-Agent: PostmanRuntime/7.43.0' \
       --data "{\n    \"name\" : \"Arpit_Srivastava\",\n    \"email\" : \"srivastavaji529@gmail.com\"\n}"

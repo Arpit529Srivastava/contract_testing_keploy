@@ -46,7 +46,7 @@ func main() {
 
 // checkPaymentStatus fetches orders and updates email status if payment is completed
 func checkPaymentStatus() error {
-	resp, err := http.Get("http://order-service:8081/orders")
+	resp, err := http.Get("http://localhost:8081/orders")
 	if err != nil {
 		log.Println("Error fetching orders 😭:", err)
 		return err
@@ -89,7 +89,7 @@ func updateEmailStatus(orderID string) error {
 		return err
 	}
 
-	resp, err := http.Post("http://order-service:8081/update-email", "application/json", bytes.NewBuffer(requestBody))
+	resp, err := http.Post("http://localhost:8081/update-email", "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		return err
 	}
