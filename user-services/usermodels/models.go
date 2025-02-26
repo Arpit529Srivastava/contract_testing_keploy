@@ -6,7 +6,7 @@ type User struct {
 	Email string `json:"email"`
 }
 
-// TableName overrides the default table name
+// TableName overrides the default table name with users
 func (User) TableName() string {
 	return "users"
 }
