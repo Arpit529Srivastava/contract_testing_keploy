@@ -15,7 +15,7 @@ var DB *mongo.Collection
 func ConnectMongoDB() {
 
 	// Create a new MongoDB client with a proper context and timeout
-	clientOptions := options.Client().ApplyURI("mongodb://orderUser:orderPassword@127.0.0.1:27017/orderDB?authSource=orderDB&authMechanism=SCRAM-SHA-1").
+	clientOptions := options.Client().ApplyURI("mongodb://mongo:27017/").
 		SetConnectTimeout(10 * time.Second)
 
 	client, err := mongo.Connect(context.TODO(), clientOptions)
