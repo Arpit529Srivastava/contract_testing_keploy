@@ -33,7 +33,7 @@ func main() {
 		}
 
 		// Send the request to the order-service
-		resp, err := http.Post("http://localhost:8081/update-payment", "application/json", bytes.NewBuffer(requestBody))
+		resp, err := http.Post("http://order_services_container:8081/update-payment", "application/json", bytes.NewBuffer(requestBody))
 		if err != nil {
 			http.Error(w, "Error contacting order-service", http.StatusInternalServerError)
 			return

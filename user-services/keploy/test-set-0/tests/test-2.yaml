@@ -5,50 +5,52 @@ name: test-2
 spec:
     metadata: {}
     req:
-        method: GET
+        method: POST
         proto_major: 1
         proto_minor: 1
         url: http://localhost:8080/users
         header:
             Accept: '*/*'
             Accept-Encoding: gzip, deflate, br
+            Cache-Control: no-cache
             Connection: keep-alive
-            Content-Length: "78"
+            Content-Length: "66"
             Content-Type: application/json
             Host: localhost:8080
-            Postman-Token: 73c3e949-0c54-4247-a190-5da4e9e6c8a7
+            Postman-Token: 3a29cffd-83aa-4947-b670-943cbdc47f61
             User-Agent: PostmanRuntime/7.43.0
         body: |-
             {
-                "name" : "Arpit_Srivastava",
-                "email" : "srivastavaji529@gmail.com"
+                "name" : "arpit",
+                "email" : "srivatavaji529@gmail.com"
             }
-        timestamp: 2025-02-25T23:21:32.760626312+05:30
+        timestamp: 2025-02-26T15:58:53.828414059Z
     resp:
         status_code: 200
         header:
-            Content-Length: "73"
+            Content-Length: "59"
             Content-Type: application/json
-            Date: Tue, 25 Feb 2025 17:51:32 GMT
+            Date: Wed, 26 Feb 2025 15:58:53 GMT
         body: |
-            [{"id":1,"name":"Arpit_Srivastava","email":"srivastavaji529@gmail.com"}]
+            {"id":1,"name":"arpit","email":"srivatavaji529@gmail.com"}
         status_message: OK
         proto_major: 0
         proto_minor: 0
-        timestamp: 2025-02-25T23:21:34.775482344+05:30
+        timestamp: 2025-02-26T15:58:55.89679837Z
     objects: []
     assertions:
         noise:
             header.Date: []
-    created: 1740505894
+    created: 1740585535
 curl: |-
-    curl --request GET \
+    curl --request POST \
       --url http://localhost:8080/users \
-      --header 'Content-Type: application/json' \
-      --header 'User-Agent: PostmanRuntime/7.43.0' \
-      --header 'Accept: */*' \
-      --header 'Postman-Token: 73c3e949-0c54-4247-a190-5da4e9e6c8a7' \
-      --header 'Host: localhost:8080' \
-      --header 'Accept-Encoding: gzip, deflate, br' \
       --header 'Connection: keep-alive' \
-      --data "{\n    \"name\" : \"Arpit_Srivastava\",\n    \"email\" : \"srivastavaji529@gmail.com\"\n}"
+      --header 'Postman-Token: 3a29cffd-83aa-4947-b670-943cbdc47f61' \
+      --header 'Accept: */*' \
+      --header 'Host: localhost:8080' \
+      --header 'Content-Type: application/json' \
+      --header 'Accept-Encoding: gzip, deflate, br' \
+      --header 'Cache-Control: no-cache' \
+      --header 'User-Agent: PostmanRuntime/7.43.0' \
+      --data "{\n    \"name\" : \"arpit\",\n    \"email\" : \"srivatavaji529@gmail.com\"\n}"
