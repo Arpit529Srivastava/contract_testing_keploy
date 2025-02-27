@@ -48,8 +48,9 @@ contract:
     driven: "consumer"
     mappings:
         servicesMapping:
-         - order-service
-        self: "payment-services"
+        user-services:
+            - /users/{id}
+        self: order-service
     services: []
     tests: []
     path: ""
