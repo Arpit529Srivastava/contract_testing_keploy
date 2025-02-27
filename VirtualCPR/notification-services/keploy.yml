@@ -49,6 +49,7 @@ contract:
   mappings:
     servicesMapping:
       order-services:
+        - order-service:8081
         - /orders
         - /update-email
     self: notification-services

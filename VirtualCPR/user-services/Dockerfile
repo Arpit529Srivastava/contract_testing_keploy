@@ -15,6 +15,6 @@ RUN go build -o user-services .
 # Use a lightweight final image
 FROM alpine:latest
 WORKDIR /app
-COPY --from=builder /app/user-services .
+COPY --from=builder /app/VirtualCPR/user-services .
 EXPOSE 8080
 CMD ["./user-services"]
