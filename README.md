@@ -19,8 +19,6 @@ This project consists of four microservices: `user-service`, `order-service`, `p
 
 ---
 
----
-
 ## Services Overview
 
 ### 1. User-Service
@@ -65,7 +63,7 @@ Before running the project, ensure you have the following installed:
 
 1. **Clone the Repository**:
    ```bash
-   git clone github.com/arpit529srivastava/contract_testing_keploy.git
+   git clone https://github.com/arpit529srivastava/contract_testing_keploy.git
    ```
 2. **Start the Databases and Services**:<br>
    Use Docker Compose to start the PostgreSQL and MongoDB databases along with the microservices.
