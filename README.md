@@ -100,6 +100,6 @@ POST /pay: Update payment status.
 ```
 * Notification-Service: <br>
 ```
-POST /pay: Update email status.
+POST /notify: Update email status and send the email.
 ```
 
