@@ -81,7 +81,7 @@ Ensure all services are running by checking their respective endpoints:
 - Notification-Service: localhost:8083/pay  
 ```
 
-4. **Endpoints**: <br>
+ ## Endpoints: <br>
 * User-Service: <br>
 ```
 POST /users: Create a new user.<br>
