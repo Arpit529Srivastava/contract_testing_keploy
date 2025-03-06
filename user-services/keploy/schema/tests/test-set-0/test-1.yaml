@@ -1,0 +1,100 @@
+openapi: 3.0.0
+info:
+    title: test-1
+    version: api.keploy.io/v1beta1
+    description: Http
+servers:
+    - url: localhost:8080
+paths:
+    /users:
+        post:
+            summary: Auto-generated operation
+            description: Auto-generated from custom format
+            parameters:
+                - name: Accept-Encoding
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: gzip, deflate, br
+                - name: Host
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: localhost:8080
+                - name: User-Agent
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: PostmanRuntime/7.43.0
+                - name: Accept
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: '*/*'
+                - name: Cache-Control
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: no-cache
+                - name: Connection
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: keep-alive
+                - name: Content-Length
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: "70"
+                - name: Content-Type
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: application/json
+                - name: Postman-Token
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: f8134c5b-e34c-4df0-b65c-bfde2b09ee97
+            operationId: 9f2bbccdbbf2c5d895137c2249f0114d-20250306220330
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                email:
+                                    type: string
+                                name:
+                                    type: string
+                        example:
+                            email: srivastavaji529@gmail.com
+                            name: sharigan
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    email:
+                                        type: string
+                                    id:
+                                        type: number
+                                    name:
+                                        type: string
+                            example:
+                                email: srivastavaji529@gmail.com
+                                id: 1
+                                name: sharigan
+components: {}

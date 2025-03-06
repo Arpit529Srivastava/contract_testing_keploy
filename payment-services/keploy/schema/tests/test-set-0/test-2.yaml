@@ -1,0 +1,94 @@
+openapi: 3.0.0
+info:
+    title: test-2
+    version: api.keploy.io/v1beta1
+    description: Http
+servers:
+    - url: localhost:8082
+paths:
+    /pay:
+        post:
+            summary: Auto-generated operation
+            description: Auto-generated from custom format
+            parameters:
+                - name: Content-Type
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: application/json
+                - name: Postman-Token
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: 927e2494-be82-4f03-9d4c-03fb357aca95
+                - name: Accept
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: '*/*'
+                - name: Accept-Encoding
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: gzip, deflate, br
+                - name: Cache-Control
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: no-cache
+                - name: Connection
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: keep-alive
+                - name: Content-Length
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: "50"
+                - name: Host
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: localhost:8082
+                - name: User-Agent
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: PostmanRuntime/7.43.0
+            operationId: fdb809de32e1434ce9da669b264aeb00-20250301225813
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    type: string
+                                payement:
+                                    type: string
+                        example:
+                            id: "3"
+                            payement: paise nhi hai
+            responses:
+                "404":
+                    description: Not Found
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                            example:
+                                error: "Failed to update payment status \U0001F622"
+components: {}

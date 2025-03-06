@@ -1,0 +1,5 @@
+servicesMapping:
+    order-services:
+        - order_service:8081
+        - /orders/update-payment
+self: payment-services
