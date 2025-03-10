@@ -11,12 +11,18 @@ paths:
             summary: Auto-generated operation
             description: Auto-generated from custom format
             parameters:
-                - name: Content-Length
+                - name: Cache-Control
                   in: header
                   required: true
                   schema:
                     type: string
-                  example: "70"
+                  example: no-cache
+                - name: Connection
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: keep-alive
                 - name: Content-Type
                   in: header
                   required: true
@@ -41,37 +47,31 @@ paths:
                   schema:
                     type: string
                   example: '*/*'
-                - name: Cache-Control
-                  in: header
-                  required: true
-                  schema:
-                    type: string
-                  example: no-cache
-                - name: Connection
-                  in: header
-                  required: true
-                  schema:
-                    type: string
-                  example: keep-alive
-                - name: Postman-Token
-                  in: header
-                  required: true
-                  schema:
-                    type: string
-                  example: 58e42030-3ba3-41de-922b-d29ed044c8bf
                 - name: Accept-Encoding
                   in: header
                   required: true
                   schema:
                     type: string
                   example: gzip, deflate, br
+                - name: Content-Length
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: "70"
+                - name: Postman-Token
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: 58e42030-3ba3-41de-922b-d29ed044c8bf
                 - name: param1
                   in: path
                   required: true
                   schema:
                     type: string
                   example: "1"
-            operationId: f73ba61beadc0eded951c2c2fd966655-20250306220330
+            operationId: fb2f3662c40e2d22c7a0dfcf28a14a0c-20250306221652
             requestBody:
                 content:
                     application/json:

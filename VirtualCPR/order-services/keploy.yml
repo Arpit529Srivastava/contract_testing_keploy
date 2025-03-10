@@ -57,13 +57,13 @@ contract:
     generate: false
     driven: consumer
     mappings:
-        servicesMapping: 
-          user-services:
-            - /users/{id}
-          payment-services:
-            - /pay
-          notification-services:
-            - /notifiy    
+        servicesMapping:
+            user-services:
+              - /users/{id}
+            payment-services:
+              - /pay
+            notification-services:
+              - /notify      
         self: s1
 inCi: false
 

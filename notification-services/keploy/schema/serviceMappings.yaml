@@ -1,5 +1,0 @@
-servicesMapping:
-    order-services:
-        - order_service_container:8081
-        - /update-email
-self: notification-services

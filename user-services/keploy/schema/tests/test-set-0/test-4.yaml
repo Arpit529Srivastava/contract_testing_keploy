@@ -23,6 +23,18 @@ paths:
                   schema:
                     type: string
                   example: gzip, deflate, br
+                - name: Connection
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: keep-alive
+                - name: Content-Length
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: "70"
                 - name: Content-Type
                   in: header
                   required: true
@@ -41,18 +53,6 @@ paths:
                   schema:
                     type: string
                   example: no-cache
-                - name: Connection
-                  in: header
-                  required: true
-                  schema:
-                    type: string
-                  example: keep-alive
-                - name: Content-Length
-                  in: header
-                  required: true
-                  schema:
-                    type: string
-                  example: "70"
                 - name: Postman-Token
                   in: header
                   required: true
@@ -71,7 +71,7 @@ paths:
                   schema:
                     type: string
                   example: "1"
-            operationId: 2cde99680354ccfaebbb543a2c238bba-20250306220330
+            operationId: f8322b44b861421bee22681955ccbfeb-20250306221652
             responses:
                 "200":
                     description: OK

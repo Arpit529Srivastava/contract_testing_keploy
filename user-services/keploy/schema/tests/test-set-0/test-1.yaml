@@ -11,42 +11,6 @@ paths:
             summary: Auto-generated operation
             description: Auto-generated from custom format
             parameters:
-                - name: Accept-Encoding
-                  in: header
-                  required: true
-                  schema:
-                    type: string
-                  example: gzip, deflate, br
-                - name: Host
-                  in: header
-                  required: true
-                  schema:
-                    type: string
-                  example: localhost:8080
-                - name: User-Agent
-                  in: header
-                  required: true
-                  schema:
-                    type: string
-                  example: PostmanRuntime/7.43.0
-                - name: Accept
-                  in: header
-                  required: true
-                  schema:
-                    type: string
-                  example: '*/*'
-                - name: Cache-Control
-                  in: header
-                  required: true
-                  schema:
-                    type: string
-                  example: no-cache
-                - name: Connection
-                  in: header
-                  required: true
-                  schema:
-                    type: string
-                  example: keep-alive
                 - name: Content-Length
                   in: header
                   required: true
@@ -59,13 +23,49 @@ paths:
                   schema:
                     type: string
                   example: application/json
+                - name: Connection
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: keep-alive
+                - name: Accept-Encoding
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: gzip, deflate, br
+                - name: Cache-Control
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: no-cache
+                - name: Host
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: localhost:8080
                 - name: Postman-Token
                   in: header
                   required: true
                   schema:
                     type: string
                   example: f8134c5b-e34c-4df0-b65c-bfde2b09ee97
-            operationId: 9f2bbccdbbf2c5d895137c2249f0114d-20250306220330
+                - name: User-Agent
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: PostmanRuntime/7.43.0
+                - name: Accept
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: '*/*'
+            operationId: 8ba6e8a34e4c1f26da2719d0df5871a4-20250306221652
             requestBody:
                 content:
                     application/json:

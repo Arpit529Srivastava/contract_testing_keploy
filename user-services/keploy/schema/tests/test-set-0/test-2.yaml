@@ -35,7 +35,7 @@ paths:
                   schema:
                     type: string
                   example: "1"
-            operationId: 8d5f5f1a8eb451dce227661740d3e4df-20250306220330
+            operationId: daecd4ad6f4f5ba82c51b7138463defd-20250306221652
             responses:
                 "200":
                     description: OK
