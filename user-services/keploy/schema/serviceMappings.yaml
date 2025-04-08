@@ -1,4 +1,0 @@
-servicesMapping:
-    order-services:
-        - /users/{id}
-self: s1
